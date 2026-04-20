@@ -239,6 +239,7 @@ void my_forward_list<T>::clear() {
     sentinel->next = nullptr;
 }
 
+//insert
 template <typename T>
 typename my_forward_list<T>::iterator my_forward_list<T>::insert_after(const_iterator pos, const T& value) {
     Node* curr = pos.current;
@@ -270,7 +271,7 @@ template <typename T>
 template <class InputIt>
 typename my_forward_list<T>::iterator my_forward_list<T>::insert_after(const_iterator pos, InputIt first, InputIt last) {
     
-    Node* curr = pos.carrent;
+    Node* curr = pos.current;
     while (first != last) {
         curr->next = new Node(*first, curr->next);
         curr = curr->next;
@@ -291,7 +292,7 @@ typename my_forward_list<T>::iterator my_forward_list<T>::insert_after(const_ite
     return iterator(curr);
 }
 
-
+//erase_after
 template <typename T>
 typename my_forward_list<T>::iterator my_forward_list<T>::erase_after(const_iterator pos) {
     Node* curr = pos.current;
@@ -314,11 +315,12 @@ typename my_forward_list<T>::iterator my_forward_list<T>::erase_after(const_iter
     return iterator(curr->next);
 }
 
+//remove
 template <typename T>
 void my_forward_list<T>::remove(const T& value) {
     auto currIt = befor_begin();
 
-    while (currIt.carrent->next != nullptr) {
+    while (currIt.current->next != nullptr) {
         if (currIt.current->next->value == value) {
             erase_after(currIt);
         } else {
@@ -343,7 +345,7 @@ void my_forward_list<T>::reverse() noexcept {
 
 template <typename T>
 void my_forward_list<T>::merge(my_forward_list<T>& other) {
-    if (this == &other || other.empty) return;
+    if (this == &other || other.empty()) return;
 
     Node* curr = sentinel;
     Node* l = sentinel->next;
@@ -391,13 +393,13 @@ void my_forward_list<T>::sort() {
 
     Node* mid = get_middle(sentinel->next);
     
-    my_forward_list<T> sencod_half;
-    sencod_half.sentinel->next = mid->next;
+    my_forward_list<T> sencond_half;
+    sencond_half.sentinel->next = mid->next;
 
     mid->next = nullptr;
 
     this->sort();
-    sencod_half.sort();
+    sencond_half.sort();
 
-    this->merge(sencod_half);
+    this->merge(sencond_half);
 }
