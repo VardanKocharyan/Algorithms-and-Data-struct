@@ -40,8 +40,8 @@ class my_forward_list {
             template <typename OtherType>
             Iterator(const Iterator<OtherType>& other) : current(other.current) {}
 
-            constexpr reference operator*() const { return current->value; }
-            constexpr pointer operator->() const { return &(current->value); }
+            constexpr reference operator*() { return current->value; }
+            constexpr pointer operator->() { return &(current->value); }
             
             constexpr Iterator& operator++() const noexcept {
                 current = current->next;
@@ -212,8 +212,8 @@ template <typename T>
 my_forward_list<T>& my_forward_list<T>::operator=(my_forward_list<T>&& other) {
     this->clear();
 
-    sentinel->next = other->next;
-    other->next = nullptr;
+    insert_after(befor_begin(), other.begin(), other.end());
+    other.sentinel->next = nullptr;
 
     return *this;
 }
@@ -376,14 +376,14 @@ void my_forward_list<T>::merge(my_forward_list<T>&& other) {
 
 template <typename T>
 typename my_forward_list<T>::Node* my_forward_list<T>::get_middle(Node* head) {
-    typename my_forward_list<T>::Node* fast = head;
+    typename my_forward_list<T>::Node* fast = head->next;
     typename my_forward_list<T>::Node* slow = head;
 
     while (fast && fast->next) {
         fast = fast->next->next;
         slow = slow->next;
     }
-    return &slow;
+    return slow;
 }
 
 
