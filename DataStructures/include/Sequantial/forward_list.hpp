@@ -36,6 +36,10 @@ class my_forward_list {
 
             Node* current;
 
+            Iterator(Node* current_ = nullptr) : current(current_) {}
+            template <typename OtherType>
+            Iterator(const Iterator<OtherType>& other) : current(other.current) {}
+
             constexpr reference operator*() const { return current->value; }
             constexpr pointer operator->() const { return &(current->value); }
             
@@ -85,8 +89,8 @@ class my_forward_list {
 
 //operator=
         my_forward_list<T>& operator=(const my_forward_list<value_type>& other);
-        //my_forward_list<T>& operator=(my_forward_list<value_type>&& other);
-        //my_forward_list<T>& operator=( std::initializer_list<value_type> ilist );
+        my_forward_list<T>& operator=(my_forward_list<value_type>&& other);
+        my_forward_list<T>& operator=( std::initializer_list<value_type> ilist );
 
         iterator insert_after(const_iterator pos, const T& value);
         iterator insert_after(const_iterator pos, T&& value);
@@ -121,7 +125,14 @@ class my_forward_list {
         void remove(const T& value);
 
         void reverse() noexcept;
-        
+
+        void merge(my_forward_list<T>& other);
+        void merge(my_forward_list<T>&& other);
+
+    private:
+        Node* get_middle(Node* head);
+
+        void sort();
 
 
         //ostream operator
@@ -194,6 +205,23 @@ my_forward_list<T>& my_forward_list<T>::operator=(const my_forward_list<T>& othe
         src = src->next;
     }
 
+    return *this;
+}
+
+template <typename T>
+my_forward_list<T>& my_forward_list<T>::operator=(my_forward_list<T>&& other) {
+    this->clear();
+
+    sentinel->next = other->next;
+    other->next = nullptr;
+
+    return *this;
+}
+
+template <typename T>
+my_forward_list<T>& my_forward_list<T>::operator=(std::initializer_list<T> ilist) {
+    clear();
+    insert_after(befor_begin(), ilist);
     return *this;
 }
 
@@ -313,7 +341,63 @@ void my_forward_list<T>::reverse() noexcept {
     sentinel->next = prev;
 }
 
+template <typename T>
+void my_forward_list<T>::merge(my_forward_list<T>& other) {
+    if (this == &other || other.empty) return;
+
+    Node* curr = sentinel;
+    Node* l = sentinel->next;
+    Node* r = other.sentinel->next;
+
+    while (l && r) {
+        
+        if (l->value <= r->value) {
+            curr->next = l;
+            l = l->next;
+        } else {
+            curr->next = r;
+            r = r->next;
+        }
+
+        curr = curr->next;
+    }
+
+    other.sentinel->next = nullptr;
+
+    curr->next = l ? l : r;
+}
+
+template <typename T>
+void my_forward_list<T>::merge(my_forward_list<T>&& other) {
+    merge(other);
+}
+
+template <typename T>
+typename my_forward_list<T>::Node* my_forward_list<T>::get_middle(Node* head) {
+    typename my_forward_list<T>::Node* fast = head;
+    typename my_forward_list<T>::Node* slow = head;
+
+    while (fast && fast->next) {
+        fast = fast->next->next;
+        slow = slow->next;
+    }
+    return &slow;
+}
 
 
+template<typename T>
+void my_forward_list<T>::sort() {
+    if (!sentinel->next || !sentinel->next->next) return;
 
+    Node* mid = get_middle(sentinel->next);
+    
+    my_forward_list<T> sencod_half;
+    sencod_half.sentinel->next = mid->next;
 
+    mid->next = nullptr;
+
+    this->sort();
+    sencod_half.sort();
+
+    this->merge(sencod_half);
+}
