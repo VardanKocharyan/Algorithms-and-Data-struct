@@ -1,4 +1,5 @@
 #pragma once 
+#include <type_traits>
 
 template <typename T>
 class my_forward_list {
@@ -96,7 +97,8 @@ class my_forward_list {
         iterator insert_after(const_iterator pos, T&& value);
         iterator insert_after(const_iterator pos, size_type count, const T& value);
         iterator insert_after(const_iterator pos, std::initializer_list<T> ilist);
-        template <typename InputIt = std::input_iterator_tag>
+        template <typename InputIt = std::input_iterator_tag, 
+                 typename  = std::enable_if_t<!std::is_integral_v<InputIt>>>
         iterator insert_after(const_iterator pos, InputIt first, InputIt last);
 
         iterator erase_after(const_iterator pos);
@@ -132,6 +134,7 @@ class my_forward_list {
     private:
         Node* get_middle(Node* head);
 
+    public:
         void sort();
 
 
@@ -268,8 +271,9 @@ typename my_forward_list<T>::iterator my_forward_list<T>::insert_after(const_ite
 }
 
 template <typename T>
-template <class InputIt>
-typename my_forward_list<T>::iterator my_forward_list<T>::insert_after(const_iterator pos, InputIt first, InputIt last) {
+template <typename InputIt, typename>
+typename my_forward_list<T>::iterator 
+my_forward_list<T>::insert_after(const_iterator pos, InputIt first, InputIt last) {
     
     Node* curr = pos.current;
     while (first != last) {
