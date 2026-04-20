@@ -43,12 +43,12 @@ class my_forward_list {
             constexpr reference operator*() { return current->value; }
             constexpr pointer operator->() { return &(current->value); }
             
-            constexpr Iterator& operator++() const noexcept {
+            constexpr Iterator& operator++() noexcept {
                 current = current->next;
                 return *this;
             }
 
-            Iterator operator++(int) const noexcept {
+            Iterator operator++(int) noexcept {
                 Iterator tmp = *this;
                 current = current->next;
                 return tmp;
