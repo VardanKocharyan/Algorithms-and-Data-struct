@@ -1,0 +1,18 @@
+#pragma once 
+#include "Sorting_Algorithms/Bubble.hpp"
+#include "Sorting_Algorithms/Selection.hpp"
+#include "Sorting_Algorithms/BubbleIt.hpp"
+#include "Sorting_Algorithms/SelectionIt.hpp"
+#include "Sorting_Algorithms/Counting.hpp"
+#include "Sorting_Algorithms/Counting_Stable.hpp"
+#include "Sorting_Algorithms/RadixSort.hpp"
+#include "Sorting_Algorithms/Insertion.hpp"
+#include "Sorting_Algorithms/BinarySearch.hpp"
+#include "Sorting_Algorithms/Rec_BinarySearch.hpp"
+#include "Sorting_Algorithms/lower_and_upper_bound.hpp"
+#include "Sorting_Algorithms/Merge_Sort.hpp"
+#include "Sorting_Algorithms/QuickSort_LastElem.hpp"
+#include "Sorting_Algorithms/QuickSort_FirstElem.hpp"
+#include "Sorting_Algorithms/QuickSort_MedianElem.hpp"
+#include "Sorting_Algorithms/QuickSort_RandElem.hpp"
+
