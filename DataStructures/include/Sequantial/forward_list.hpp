@@ -147,8 +147,6 @@ class my_forward_list {
             }
             return os;
         }
-        
-
 };
 
 //ctor
