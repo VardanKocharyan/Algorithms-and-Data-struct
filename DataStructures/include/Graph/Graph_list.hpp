@@ -28,6 +28,8 @@ private:
     void kj_dfs2(int u, std::vector<bool>& v, std::vector<int>& tmp, const std::vector<std::vector<std::pair<int, int>>>& t_adj);
     void Bridg_dfs(int u, int p, int& time, std::vector<int>& low, std::vector<int>& disc, std::vector<std::pair<int, int>>& bridges);
     void AP_dfs(int u, int p, int& time, std::vector<int>& low, std::vector<int>& disc, std::vector<bool>& isAP);
+    std::vector<Edge> makeEdgeVector();
+    int kruskal(std::vector<Edge>& MST);
 
 public:
     void addEdge(int u, int v, int w = 1, bool isUndigr = true);
@@ -48,6 +50,35 @@ public:
     std::vector<std::pair<int, int>> Bridg();
     std::vector<bool> ArticulationPoint();
     bool BellmanFord(int src);
+    int Kruskal();
+    int Prim(int start = 0);
+
+    // DSU
+    struct DSU {
+        std::vector<int> parent;
+        std::vector<int> rank;
+
+        DSU(int n) { 
+            parent.resize(n);
+            rank.assign(n, 0);
+            for (int i{}; i < adj.size(); ++i) 
+                parent[i] = i; 
+        }
+        ~DSU() = default;
+
+        int find(int x);
+        bool unite(int x, int y);
+    };
+
+    // Edge for Kruskal
+    struct Edge {
+        int u, v, w;
+        Edge() = default;
+        Edge(const Edge& e) : u(u), v(v), w(w) {}
+        ~Edge() default;
+        bool operator<(const Edge& other) const { return w < other.w; }
+    }
+
 };
 
 // --- Implementations ---
@@ -379,4 +410,116 @@ bool Graph_list::BellmanFord(int src) {
     }
 
     return true;
+}
+
+int Graph_list::DSU::find(int x) {
+    if (parent[x] == x) return x;
+    return parent[x] = find(parent[x]);
+}
+
+bool Graph_list::DSU::unite(int x, int y) {
+    int a = Graph_list::DSU::find(x);
+    int b = Graph_list::DSU::find(y);
+
+    if (a == b) return false;
+
+    if (rank[a] > rank[b]) {
+        parent[b] = a;
+    } else if (rank[a] < rank[b]) {
+        parent[a] = b;
+    } else {
+        parent[b] = a;
+        ++rank[a];
+    }
+
+    return true;
+}
+
+std::vector<typename Graph_list::Edge> Graph_list::makeEdgeVector() {
+    using Edge = typename Graph_list::Edge;
+
+    std::vector<Edge> edge;
+    int n = adj.size();
+
+    for (int i{}; i < n; ++i) {
+        for (auto& [v, w] : adj[u]) {
+            if (u < v) {
+                Edge e(u, v, w);
+                edge.push_back(std::move(e));
+            }
+        }
+    }
+
+    return edge;
+}
+
+std::pair<int, bool> Graph_list::kruskal(std::vector<typename Graph_list::Edge>& MST) {
+    using Edge = typename Graph_list::Edge;
+    using DSU = typename Graph_list::DSU;
+
+    int n = adj.size();
+    DSU dsu(n);
+    std::vector<Edge> edges(std::move(makeEdgeVector()));
+
+    std::sort(edges.begin(), edges.end(),
+             [] (const Edge& lhs,
+                 const Edge& rhs) {
+                return lhs.w < rhs.w;
+             } )
+
+    int res{};
+    for (Edge& e : edges) {
+        if (dsu.unite(e.u, e.v)) {
+            res += e.w;
+            MST.push_back(e);
+        }
+
+        if (MST.size() == n - 1) return {res, true};
+    }
+
+    return {res, (n == 0 || n == 1 ? true : false)};
+}
+
+
+int Graph_list::Kruskal() {
+    std::vector<Edge> mst();
+    auto res = kruskal(mst);
+    return res.second ? res.first : -1;
+}
+
+int Prim(int start) {
+    using tiii = std::tuple<int, int, int>; // {weight, current_node, parent}
+
+    int n = adj.size();
+    if (n == 0) return 0;
+
+    std::vector<bool> inMST(n, false);
+    std::vector<tiii> mst;
+    std::priority_queue< tiii, 
+                         std::vector<tiii>, 
+                         std::greater<tiii> > pq;
+    int res{}, used{};
+
+    pq.push({0, start, -1});
+
+    while (!pq.empty()) {
+        auto& [w, u, p] = pq.top(); pq.pop();
+
+        if (inMST[u]) continue;
+        inMST[u] = true;
+
+        ++used;
+        res += w;
+
+        if (p != -1) {
+            mst.push_back({p, u, w});
+        }
+
+        if (used == n) return res;
+        for (auto& [nb, weight] : adj[u]) {
+            if (!inMST[nb]) pq.push({weight, nb, u});
+        }
+    }
+
+    return used == n ? res : -1;
 }
