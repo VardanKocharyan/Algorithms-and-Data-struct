@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/test_list.dir/sequence/test_list.cpp.o -o test_list  -lgtest -lgtest_main 
