@@ -158,6 +158,44 @@ test_list/fast:
 	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_list.dir/build.make tests/CMakeFiles/test_list.dir/build
 .PHONY : test_list/fast
 
+# Convenience name for target.
+tests/CMakeFiles/test_deque.dir/rule:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_deque.dir/rule
+.PHONY : tests/CMakeFiles/test_deque.dir/rule
+
+# Convenience name for target.
+test_deque: tests/CMakeFiles/test_deque.dir/rule
+.PHONY : test_deque
+
+# fast build rule for target.
+test_deque/fast:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_deque.dir/build.make tests/CMakeFiles/test_deque.dir/build
+.PHONY : test_deque/fast
+
+sequence/test_deque.o: sequence/test_deque.cpp.o
+.PHONY : sequence/test_deque.o
+
+# target to build an object file
+sequence/test_deque.cpp.o:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_deque.dir/build.make tests/CMakeFiles/test_deque.dir/sequence/test_deque.cpp.o
+.PHONY : sequence/test_deque.cpp.o
+
+sequence/test_deque.i: sequence/test_deque.cpp.i
+.PHONY : sequence/test_deque.i
+
+# target to preprocess a source file
+sequence/test_deque.cpp.i:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_deque.dir/build.make tests/CMakeFiles/test_deque.dir/sequence/test_deque.cpp.i
+.PHONY : sequence/test_deque.cpp.i
+
+sequence/test_deque.s: sequence/test_deque.cpp.s
+.PHONY : sequence/test_deque.s
+
+# target to generate assembly for a file
+sequence/test_deque.cpp.s:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_deque.dir/build.make tests/CMakeFiles/test_deque.dir/sequence/test_deque.cpp.s
+.PHONY : sequence/test_deque.cpp.s
+
 sequence/test_forward_list.o: sequence/test_forward_list.cpp.o
 .PHONY : sequence/test_forward_list.o
 
@@ -238,9 +276,13 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test_deque"
 	@echo "... test_forward_list"
 	@echo "... test_list"
 	@echo "... test_vector"
+	@echo "... sequence/test_deque.o"
+	@echo "... sequence/test_deque.i"
+	@echo "... sequence/test_deque.s"
 	@echo "... sequence/test_forward_list.o"
 	@echo "... sequence/test_forward_list.i"
 	@echo "... sequence/test_forward_list.s"

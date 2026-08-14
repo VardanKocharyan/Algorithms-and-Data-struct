@@ -111,4 +111,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "tests/CMakeFiles/test_vector.dir/DependInfo.cmake"
   "tests/CMakeFiles/test_forward_list.dir/DependInfo.cmake"
   "tests/CMakeFiles/test_list.dir/DependInfo.cmake"
+  "tests/CMakeFiles/test_deque.dir/DependInfo.cmake"
   )

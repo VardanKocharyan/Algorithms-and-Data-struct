@@ -12,3 +12,6 @@ target_link_libraries(test_list PRIVATE gtest gtest_main)
 #target_include_directories(test_list PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_list PRIVATE mystl)
 
+add_executable(test_deque sequence/test_deque.cpp)
+target_link_libraries(test_deque PRIVATE gtest gtest_main mystl)
+

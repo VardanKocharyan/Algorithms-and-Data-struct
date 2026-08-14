@@ -168,6 +168,19 @@ test_list/fast:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_list.dir/build.make tests/CMakeFiles/test_list.dir/build
 .PHONY : test_list/fast
 
+#=============================================================================
+# Target rules for targets named test_deque
+
+# Build rule for target.
+test_deque: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_deque
+.PHONY : test_deque
+
+# fast build rule for target.
+test_deque/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_deque.dir/build.make tests/CMakeFiles/test_deque.dir/build
+.PHONY : test_deque/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -177,6 +190,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... mystl_example"
+	@echo "... test_deque"
 	@echo "... test_forward_list"
 	@echo "... test_list"
 	@echo "... test_vector"

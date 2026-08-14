@@ -6,5 +6,6 @@
 /home/vardan/Algorithms_and_DataStructures/DataStructures/build/tests/CMakeFiles/test_vector.dir
 /home/vardan/Algorithms_and_DataStructures/DataStructures/build/tests/CMakeFiles/test_forward_list.dir
 /home/vardan/Algorithms_and_DataStructures/DataStructures/build/tests/CMakeFiles/test_list.dir
+/home/vardan/Algorithms_and_DataStructures/DataStructures/build/tests/CMakeFiles/test_deque.dir
 /home/vardan/Algorithms_and_DataStructures/DataStructures/build/tests/CMakeFiles/edit_cache.dir
 /home/vardan/Algorithms_and_DataStructures/DataStructures/build/tests/CMakeFiles/rebuild_cache.dir
