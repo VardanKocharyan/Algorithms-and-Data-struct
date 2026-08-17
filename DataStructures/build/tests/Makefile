@@ -172,6 +172,44 @@ test_deque/fast:
 	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_deque.dir/build.make tests/CMakeFiles/test_deque.dir/build
 .PHONY : test_deque/fast
 
+# Convenience name for target.
+tests/CMakeFiles/test_stack.dir/rule:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_stack.dir/rule
+.PHONY : tests/CMakeFiles/test_stack.dir/rule
+
+# Convenience name for target.
+test_stack: tests/CMakeFiles/test_stack.dir/rule
+.PHONY : test_stack
+
+# fast build rule for target.
+test_stack/fast:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_stack.dir/build.make tests/CMakeFiles/test_stack.dir/build
+.PHONY : test_stack/fast
+
+adaptors/test_stack.o: adaptors/test_stack.cpp.o
+.PHONY : adaptors/test_stack.o
+
+# target to build an object file
+adaptors/test_stack.cpp.o:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_stack.dir/build.make tests/CMakeFiles/test_stack.dir/adaptors/test_stack.cpp.o
+.PHONY : adaptors/test_stack.cpp.o
+
+adaptors/test_stack.i: adaptors/test_stack.cpp.i
+.PHONY : adaptors/test_stack.i
+
+# target to preprocess a source file
+adaptors/test_stack.cpp.i:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_stack.dir/build.make tests/CMakeFiles/test_stack.dir/adaptors/test_stack.cpp.i
+.PHONY : adaptors/test_stack.cpp.i
+
+adaptors/test_stack.s: adaptors/test_stack.cpp.s
+.PHONY : adaptors/test_stack.s
+
+# target to generate assembly for a file
+adaptors/test_stack.cpp.s:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_stack.dir/build.make tests/CMakeFiles/test_stack.dir/adaptors/test_stack.cpp.s
+.PHONY : adaptors/test_stack.cpp.s
+
 sequence/test_deque.o: sequence/test_deque.cpp.o
 .PHONY : sequence/test_deque.o
 
@@ -279,7 +317,11 @@ help:
 	@echo "... test_deque"
 	@echo "... test_forward_list"
 	@echo "... test_list"
+	@echo "... test_stack"
 	@echo "... test_vector"
+	@echo "... adaptors/test_stack.o"
+	@echo "... adaptors/test_stack.i"
+	@echo "... adaptors/test_stack.s"
 	@echo "... sequence/test_deque.o"
 	@echo "... sequence/test_deque.i"
 	@echo "... sequence/test_deque.s"

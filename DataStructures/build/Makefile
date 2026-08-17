@@ -181,6 +181,19 @@ test_deque/fast:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_deque.dir/build.make tests/CMakeFiles/test_deque.dir/build
 .PHONY : test_deque/fast
 
+#=============================================================================
+# Target rules for targets named test_stack
+
+# Build rule for target.
+test_stack: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_stack
+.PHONY : test_stack
+
+# fast build rule for target.
+test_stack/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_stack.dir/build.make tests/CMakeFiles/test_stack.dir/build
+.PHONY : test_stack/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -193,6 +206,7 @@ help:
 	@echo "... test_deque"
 	@echo "... test_forward_list"
 	@echo "... test_list"
+	@echo "... test_stack"
 	@echo "... test_vector"
 .PHONY : help
 

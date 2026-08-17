@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/test_stack.dir/adaptors/test_stack.cpp.o -o test_stack 
