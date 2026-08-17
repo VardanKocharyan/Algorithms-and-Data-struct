@@ -186,6 +186,44 @@ test_stack/fast:
 	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_stack.dir/build.make tests/CMakeFiles/test_stack.dir/build
 .PHONY : test_stack/fast
 
+# Convenience name for target.
+tests/CMakeFiles/test_queue.dir/rule:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_queue.dir/rule
+.PHONY : tests/CMakeFiles/test_queue.dir/rule
+
+# Convenience name for target.
+test_queue: tests/CMakeFiles/test_queue.dir/rule
+.PHONY : test_queue
+
+# fast build rule for target.
+test_queue/fast:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_queue.dir/build.make tests/CMakeFiles/test_queue.dir/build
+.PHONY : test_queue/fast
+
+adaptors/test_queue.o: adaptors/test_queue.cpp.o
+.PHONY : adaptors/test_queue.o
+
+# target to build an object file
+adaptors/test_queue.cpp.o:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_queue.dir/build.make tests/CMakeFiles/test_queue.dir/adaptors/test_queue.cpp.o
+.PHONY : adaptors/test_queue.cpp.o
+
+adaptors/test_queue.i: adaptors/test_queue.cpp.i
+.PHONY : adaptors/test_queue.i
+
+# target to preprocess a source file
+adaptors/test_queue.cpp.i:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_queue.dir/build.make tests/CMakeFiles/test_queue.dir/adaptors/test_queue.cpp.i
+.PHONY : adaptors/test_queue.cpp.i
+
+adaptors/test_queue.s: adaptors/test_queue.cpp.s
+.PHONY : adaptors/test_queue.s
+
+# target to generate assembly for a file
+adaptors/test_queue.cpp.s:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_queue.dir/build.make tests/CMakeFiles/test_queue.dir/adaptors/test_queue.cpp.s
+.PHONY : adaptors/test_queue.cpp.s
+
 adaptors/test_stack.o: adaptors/test_stack.cpp.o
 .PHONY : adaptors/test_stack.o
 
@@ -317,8 +355,12 @@ help:
 	@echo "... test_deque"
 	@echo "... test_forward_list"
 	@echo "... test_list"
+	@echo "... test_queue"
 	@echo "... test_stack"
 	@echo "... test_vector"
+	@echo "... adaptors/test_queue.o"
+	@echo "... adaptors/test_queue.i"
+	@echo "... adaptors/test_queue.s"
 	@echo "... adaptors/test_stack.o"
 	@echo "... adaptors/test_stack.i"
 	@echo "... adaptors/test_stack.s"

@@ -1,45 +1,63 @@
 #pragma once 
-#include <list>
-#include <exception>
 
-template <typename T>
-class my_queue {
-    public:
-        using value_type = typename std::list<T>::value_type;
-        using size_type = typename std::list<T>::size_type;
+#include <utility>
+#include <cstddef>
+#include "../sequence/deque.hpp"
 
-    protected:
-        std::list<T> c;
-    
-    public:
-        class EmptyQueueException : public std::exception {
-            const char* what() const noexcept override {
-                return "Empty Queue!!!";    
-            }
-        };
+namespace mystl {
 
-        void push(const T& elem) { c.push_back(elem); }
+template <
+    class T,
+    class Container = deque<T>
+>class queue {
+public:
+    using container_type    = Container;
+    using value_type        = typename Container::value_type;
+    using size_type         = typename Container::size_type;
+    using reference         = typename Container::reference;
+    using const_reference   = typename Container::const_reference;
 
-        void pop() {
-            if (empty()) {
-                throw EmptyQueueException();
-            }
-            c.pop_front(); 
-        }
+    queue() = default;
+    explicit queue( const Container& cont ) : c(cont) {}
+    explicit queue ( Container&& cont) : c(std::move(cont)) {}
+    queue( const queue& other ) = default;
+    queue( queue&& other ) = default;
+    queue& operator=( const queue& other ) = default;
+    queue& operator=( queue&& other ) = default;
+    ~queue() = default;
 
-        T& front() {
-            if (empty()) {
-                throw EmptyQueueException();
-            }
-            return c.front(); 
-        }
+    reference front() { return c.front(); }
+    const_reference front() const { return c.front(); }
 
-        T& back() { 
-            if (empty()) {
-                throw EmptyQueueException();
-            }
+    reference back() { return c.back(); }
+    const_reference back() const { return c.back(); }
 
-            return c.back(); }
-        size_type size() { return c.size(); }
-        bool empty() { return c.empty(); }
+    size_type size() const noexcept { return c.size(); }
+
+    [[nodiscard]] bool empty() const noexcept { return c.empty(); }
+
+    void push( const T& value ) { c.push_back(value); }
+    void push( T&& value ) { c.push_back(std::move(value)); }
+
+    template < class... Args>
+    decltype(auto) emplace( Args&&... args ) {
+        return c.emplace_back(std::forward<Args>(args)...);
+    }
+
+    void pop() { c.pop_front(); }
+
+    void swap( queue& other ) noexcept(noexcept(std::swap(c, other.c))) {
+        using std::swap;
+        swap(c, other.c);
+    }
+
+    friend void swap( queue& lhs, queue& rhs ) noexcept(noexcept(lhs.swap(rhs))) {
+        lhs.swap(rhs);
+    }
+
+
+protected:
+    Container c;
 };
+
+} //mystl namespace

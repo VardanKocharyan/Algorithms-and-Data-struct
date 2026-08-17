@@ -12,8 +12,8 @@ template <
 > class stack {
 public:
     using container_type    = Container;
-    using value_type        = T;
-    using size_type         = std::size_t;
+    using value_type        = typename Container::value_type;
+    using size_type         = typename Container::size_type;
     using reference	        = typename Container::reference;
     using const_reference   = typename Container::const_reference;
 
@@ -47,8 +47,20 @@ public:
 
     void pop() { c.pop_back(); }
 
+    void swap( stack& other ) noexcept(noexcept(std::swap(c, other.c))) {
+        std::swap(c, other.c);
+    }
+
+    friend void swap( stack& lhs, stack& rhs ) noexcept(noexcept(lhs.swap(rhs))) {
+        lhs.swap(rhs);
+    }
+
 protected:
     Container c;
 };
+
+
+
+
 
 } // mystl namespace
