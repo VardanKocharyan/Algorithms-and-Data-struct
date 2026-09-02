@@ -1,530 +1,492 @@
 #pragma once 
-#include "lib_unordered_map.hpp"
+
+#include <cstddef>
+#include <type_traits>
+#include <cmath>
+
+#include "../sequence/vector.hpp"
+
+
+namespace mystl {
 
 template <
-        typename Key,
-        typename T,
-        typename Hash = std::hash<Key>,
-        typename KeyEqual = equal_to<Key> 
-> class my_unordered_map 
-{
+    class Key,
+    class T,
+    class Hash = std::hash<Key>,
+    class KeyEqual = std::equal_to<Key>,
+    class Allocator = std::allocator<std::pair<const Key, T>>
+> class unordered_map {
+
+public:
+    using key_type               = Key;
+    using mapped_type           = T;
+    using value_type            = std::pair<const Key, T>;
+    using size_type             = std::size_t;
+    using difference_type       = std::ptrdiff_t;
+    using hasher                = Hash;
+    using key_equal             = KeyEqual;
+    using allocator_type        = Allocator;
+    using reference             = value_type&;
+    using const_reference       = const value_type&;
+    using pointer               = typename std::allocator_traits<Allocator>::pointer;
+    using const_pointer         = typename std::allocator_traits<Allocator>::const_pointer;
+    
+private:
+    struct Node {
+        value_type value;
+        Node* next{nullptr};
+        std::size_t hash_code;
+    };
+
+public:
+    using node_allocator        = typename std::allocator_traits<Allocator>::template rebind_alloc<Node>;
+    using node_traits           = std::allocator_traits<node_allocator>;
+
+private:
+    template <typename... Args>
+    Node* create_node(Args&&... args) {
+        Node* p = node_traits::allocate(node_alloc_, 1);
+
+        try {
+            node_traits::construct(node_alloc_, std::addressof(p->value), std::forward<Args>(args)...);        
+        } catch(...) {
+            node_traits::deallocate(node_alloc_, p, 1);
+            throw;
+        }
+        p->next = nullptr;
+        p->hash_code = 0;
+        return p;
+    }
+
+    void destroy_node(Node* p) {
+        node_traits::destroy(node_alloc_, std::addressof(p->value));
+        node_traits::deallocate(node_alloc_, p, 1);
+    }
+
+public:
+    template <bool IsConst>
+    class unordered_map_iterator {
     public:
-        using key_type             = Key;
-        using mapped_type          = T;
-        using value_type           = std::pair<const Key, T>;
-        using size_type            = size_t;
-        using difference_type      = std::ptrdiff_t;
-        using hasher               = Hash;
-        using key_equal            = KeyEqual;
-        using reference            = value_type&;
-        using const_reference      = const value_type&;
-        using iterator             = MapIterator<value_type, my_unordered_map>;
-        using const_iterator       = MapIterator<const value_type, const my_unordered_map>;
-        using local_iterator       = typename my_forward_list<value_type>::iterator;
-        using const_local_iterator = typename my_forward_list<value_type>::const_iterator;
+        using iterator_category = std::forward_iterator_tag;
+        using value_type        = std::pair<const Key, T>;
+        using difference_type   = std::ptrdiff_t;
+        using pointer           = std::conditional_t<IsConst, const value_type*, value_type*>;
+        using reference         = std::conditional_t<IsConst, const value_type&, value_type&>;
+        
+        using unordered_map_node_ptr    = std::conditional_t<IsConst, const Node*, Node*>;
+        using map_ptr                   = std::conditional_t<IsConst, const unordered_map*, unordered_map*>;
+
+        unordered_map_iterator() = default;
+        unordered_map_iterator(Node* node, map_ptr map, size_type bucket_idx)
+            : current_node_(node), map_(map), bucket_index_(bucket_idx) {}
+
+        template <bool OtherConst, typename = std::enable_if_t<!OtherConst && IsConst>>
+        unordered_map_iterator(const unordered_map_iterator<OtherConst>& other) noexcept 
+            : current_node_(other.current_node_), map_(other.map_), bucket_index_(other.bucket_index_) {}
+            
+        reference operator*() const noexcept { return current_node_->value; };
+
+        pointer operator->() const noexcept { return std::addressof(operator*()); }
+
+        unordered_map_iterator& operator++() noexcept {
+            if (current_node_->next) {
+                current_node_ = current_node_->next;
+            } else {
+                current_node_ = nullptr;
+                ++bucket_index_;
+                while (bucket_index_ < map_->bucket_.size()) {
+                    if (map_->bucket_[bucket_index_]) {
+                        current_node_ = map_->bucket_[bucket_index_];
+                        break;
+                    }
+                    ++bucket_index_;
+                }
+            }
+
+            return *this;
+        }
+
+        unordered_map_iterator& operator++(int) noexcept {
+            unordered_map_iterator tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+    
+        friend bool operator==(const unordered_map_iterator& lhs, const unordered_map_iterator& rhs) noexcept {
+            return lhs.current_node_ == rhs.current_node_;
+        }
+
+        friend bool operator!=(const unordered_map_iterator& lhs, const unordered_map_iterator& rhs) noexcept {
+            return !(lhs == rhs);
+        }
 
     private:
-        hasher hash_fn;
-        key_equal eq_fn;
-        std::vector<my_forward_list<value_type>> table;
-        int m;
-        int n;
-        float max_load_factor = 0.75;
+        unordered_map_node_ptr current_node_{nullptr};
+        map_ptr map_{nullptr};
+        size_type bucket_index_{0};
 
-        size_type get_bucket_index(const Key& key) const { return hash_fn(key) % m; }
+        friend class unordered_map;
+        template <bool> friend class unordered_map_iterator;
+    };
 
-    public:
-        //iterator
-        template <typename DataType, typename MapType>
-        struct MapIterator 
-        {
-            using iterator_category = std::forward_iterator_tag;
-            using value_type = DataType;
-            using reference = DataType&;
-            using pointer = DataType*;
-
-            typename my_forward_list<DataType>::Node* current_node;
-            size_type bucket_idx;
-            MapType* map_ptr;
-
-            MapIterator(typename my_forward_list<DataType>::Node* node, size_type idx, MapType* map)
-                : current_node(node), bucket_idx(idx), map_ptr(map) {}
-
-            reference operator*() const { return current_node->value; }
-            pointer operator->() const { return &(current_node->value); }
-
-            MapIterator& operator++() {
-                if (current_node)  {
-                    current_node = current_node->next;
-                }
-
-                if (!current_node) {
-                    while (!current_node && bucket_idx < m) {
-                        if (!table[bucket_idx].empty()) {
-                            current_node = table[bucket_idx].begin().current;
-                            return *this;
-                        }
-                        ++bucket_idx;
-                    }
-                    current_node = nullptr;
-                }
-                return *this;
-            }
-
-            MapIterator operator++(int) {
-                MapIterator tmp = *this;
-                ++(*this);
-                return tmp;
-            }
-        };
-        
-    public:
-        //ctors
-        my_unordered_map() = default;
-        
-        explicit my_unordered_map(size_type bucket_count,
-                                  const Hash& hash = Hash(),
-                                  const key_equal& equal = key_equal() );
-        
-        /*template <typename InputIt>
-        my_unordered_map(InputIt first, InputIt last,
-                         size_type bucket_count = 13,
-                         const Hash& hash = Hash(),
-                         const key_equal& equal = key_equal() );
-        */
-
-        my_unordered_map(const my_unordered_map& other);
-        my_unordered_map(my_unordered_map&& other);
-        my_unordered_map(std::initialize_list<value_type> init);
-        
-        //dtor
-        ~my_unordered_map() = default;
-
-        size_type bucket_count() const { return m; }
-        float max_load_factor() const { return max_load_factor; }
-        size_type bucket_size( size_type n ) const { return n; }
-        float load_factor() const { return (bucket_size() / bucket_count()); }
-
-        void rehash(size_type count);
-
-        iterator begin() noexcept;
-        const_iterator begin() const noexcept;
-        const_iterator cbegin() const noexcept;
-
-        iterator end() noexcept;
-        const_iterator end() const noexcept;
-        const_iterator cend() const noexcept;
-        
-        iterator find(const Key& key);
-        const_iterator find(const Key& key) const;
-
-        bool contains(const Key& key) const;
-
-        std::pair<iterator, bool> insert( const value_type& value );
-        std::pair<iterator, bool> insert( value_type&& value );
-        template <typename P>
-        std::pair<iterator, bool> insert(P&& value);
-        template <typename InputIt>
-        void insert(InputIt first, InputIt last);
-        void insert(std::initializer_list<value_type> ilist);
-
-        T& operator[](const Key& key);
-        T& operator[](Key&& key);
-        template <typename K>
-        T& operator[](K&& key);
-
-        template <class M>
-        std::pair<iterator, bool> insert_or_assign( const Key& key, M&& obj );
-        template <class M>
-        std::pair<iterator, bool> insert_or_assign( Key&& key, M&& obj );
-
-        iterator erase( iterator pos );
-        iterator erase( const_iterator pos );
-        iterator erase( const_iterator first, const_iterator last );
-        size_type erase( const Key& key );
+    using iterator          = unordered_map_iterator<false>;
+    using const_iterator    = unordered_map_iterator<true>;
 
 
-        friend std::ostream& operator<<(std::ostream& os, const my_unordered_map& l) {
-            os << "{ ";    
-            for (int i{}; i < l.m; ++i) {
-                auto it = l.table[i].begin(); 
-                auto end = l.table[i].end();
-        
-                while (it != end) {
-                os << it->first << ": " << it->second << " ";
-                ++it;
-                }
-            }
-            os << "}";
-            return os;
-        }
-        
-};
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-my_unordered_map<Key, T, Hash, KeyEqual>::my_unordered_map(
-        size_t bucket_count, const Hash& hash, const KeyEqual& equal
-) : hash_fn(hash), eq_fn(equal), table(bucket_count), m(bucket_count), n(0) {}
-
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-my_unordered_map<Key, T, Hash, KeyEqual>::my_unordered_map(
-        const my_unordered_map<Key, T, Hash, KeyEqual>& other
-) : hash_fn(other.hash_fn), eq_fn(other.eq_fn), table(other.table), m(other.m), n(other.n) {}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-my_unordered_map<Key, T, Hash, KeyEqual>::my_unordered_map(
-        my_unordered_map<Key, T, Hash, KeyEqual>&& other
-) : hash_fn(other.hash_fn),
-    eq_fn(other.eq_fn),
-    table(std::move(other.table)),
-    m(std::move(other.m)),
-    n(std::move(other.n)) 
-{
-    other.m = 0;
-    other.n = 0;
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-my_unordered_map<Key, T, Hash, KeyEqual>::my_unordered_map(
-        std::initializer_list<value_type> init
-) : hash_fn(Hash()), eq_fn(other.eq_fn), m(13), n(0) 
-{
-    for (auto& num : init) {
-        insert(num);
-    }
-}
-
-//rehash
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-void my_unordered_map<Key, T, Hash, KeyEqual>::rehash(size_t count) 
-{
-    std::vector<my_forward_list<value_type>> new_table(count);
-
-    for (auto& old : table) {
-        while (!old.empty()) {
-                value_type tmp = std::move(old.front());
-                old.pop_front();
-
-                size_type new_idx = hash_fn(tmp.first) % count;
-                new_table[new_idx].push_front(std::move(tmp));
-        }
-    }
-    table = std::move(new_table);
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator 
-    my_unordered_map<Key, T, Hash, KeyEqual>::begin() 
-{
-        for (size_type i{}; i < m; ++i) {
-            if (!table[i].empty()) {
-                return iterator(table[i].begin().current, i, this);
+    iterator begin() noexcept {
+        for (size_type i = 0; i < bucket_count_; ++i) {
+            if (bucket_[i] != nullptr) {
+                return iterator(bucket_[i], this, i);
             }
         }
         return end();
-}
+    }
 
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::const_iterator 
-    my_unordered_map<Key, T, Hash, KeyEqual>::begin() const 
-{
-    for (size_type i{}; i < m; ++i) {
-        if (!table[i].empty()) {
-            return const_iterator(table[i].begin().current, i, this);
+    iterator end() noexcept {
+        return iterator(nullptr, this, bucket_count_);
+    }
+
+    const_iterator cbegin() {
+        for (size_type i = 0; i < bucket_count_; ++i) {
+            if (bucket_[i]) return const_iterator(bucket_[i], this, i);
+        }
+        return cend();
+    }
+
+    const_iterator cend() {
+        return const_iterator(nullptr, this, bucket_count_);
+    }
+
+    explicit unordered_map(size_type bucket_count = 16,
+                       const Hash& hash = Hash(),
+                       const KeyEqual& equal = KeyEqual(),
+                       const Allocator& alloc = Allocator())
+    : hash_(hash),
+      key_equal_(equal),
+      bucket_(bucket_count),
+      bucket_count_(bucket_count),
+      node_alloc_(alloc) {}
+
+    unordered_map(std::initializer_list<value_type> init,
+                size_type bucket_count = 8,
+                const hasher& hash = hasher(),
+                const key_equal& equal = key_equal(),
+                const allocator_type& alloc = allocator_type())
+        : unordered_map(bucket_count, hash, equal, alloc) {
+        for (const auto& item : init) {
+            emplace(item);
         }
     }
-    return end();
-}
 
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::const_iterator 
-    my_unordered_map<Key, T, Hash, KeyEqual>::cbegin() const 
-{
-    for (size_type i{}; i < m; ++i) {
-        if (!table[i].empty()) {
-            return const_iterator(table[i].cbegin().current, i, this);
+    template <typename InputIt>
+    unordered_map(InputIt first, InputIt last,
+                size_type bucket_count = 8,
+                const hasher& hash = hasher(),
+                const key_equal& equal = key_equal(),
+                const allocator_type& alloc = allocator_type())
+        : unordered_map(bucket_count, hash, equal, alloc) {
+        for (; first != last; ++first) {
+            emplace(*first);
         }
     }
-    return cend();
-}
 
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator 
-    my_unordered_map<Key, T, Hash, KeyEqual>::end() 
-{
-    return iterator(nullptr, m, this);
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::const_iterator 
-    my_unordered_map<Key, T, Hash, KeyEqual>::end() const
-{
-    return const_iterator(nullptr, m, this);
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::const_iterator 
-    my_unordered_map<Key, T, Hash, KeyEqual>::cend() const
-{
-    return const_iterator(nullptr, m, this);
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator
-    my_unordered_map<Key, T, Hash, KeyEqual>::find(const Key& key) 
-{
-    size_type idx = get_bucket_index(key);
-    auto it = table[idx].begin();
-    auto end = table[idx].end();
-
-    while (it != end) 
-    {
-        if (eq_fn(it->first, key)) return iterator(it.current, idx, this);
-        ++it;
-    }
-    return end();
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::const_iterator
-    my_unordered_map<Key, T, Hash, KeyEqual>::find(const Key& key) const
-{
-    size_type idx = get_bucket_index(key);
-    auto it = table[idx].begin();
-    auto end = table[idx].end();
-
-    while (it != end) 
-    {
-        if (eq_fn(it->first, key)) return const_iterator(it.current, idx, this);
-        ++it;
-    }
-    return end();
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-bool my_unordered_map<Key, T, Hash, KeyEqual>::contains(const Key& key) const
-{
-    return find(key) != end();
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-std::pair<typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator, bool> 
-    my_unordered_map<Key, T, Hash, KeyEqual>::insert( const value_type& value )
-{
-    if (load_factor() > max_load_factor()) rehash(table.size() * 2);
-
-    iterator it = find(value.first);
-    if (it != end()) return {it, false};
-
-    size_type idx = get_bucket_index(value.first);
-    table[idx].push_front(value);
-    ++n;
-
-    return {iterator(table[idx].begin().current, idx, this), true};
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-std::pair<typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator, bool> 
-    my_unordered_map<Key, T, Hash, KeyEqual>::insert(value_type&& value) 
-{
-    if (load_factor() > max_load_factor()) rehash(table.size() * 2);  
-
-    iterator it = find(value.first);
-    if (it != end()) return {it, false};
-
-    size_type idx = get_bucket_index(value.first);
-    table[idx].push_front(std::move(value));
-    ++n;
-
-    return {iterator(table[idx].begin().current, idx, this), true};
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-template<typename P>
-std::pair<typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator, bool>
-    my_unordered_map<Key, T, Hash, KeyEqual>::insert(P&& value)
-{
-    if (load_factor() > max_load_factor()) rehash(table.size() * 2);
-
-    value_type tmp(std::forward<P>(value));
-
-    auto it = find(tmp.first);
-    if (it != end()) {
-        return {it, false};
+    unordered_map(const unordered_map& other)
+        : bucket_count_(other.bucket_count_),
+            hash_(other.hash_),
+            key_equal_(other.key_equal_),
+            node_alloc_(other.node_alloc_),
+            size_(0),
+            max_load_factor_(other.max_load_factor_),
+            bucket_(other.bucket_count_, nullptr) {
+        for (const auto& item : other) {
+            emplace(item);
+        }
     }
 
-    size_t idx = get_bucket_index(tmp.first);
-    table[idx].push_front(std::move(tmp));
-    ++n;
-
-        return {iterator(table[idx].begin().current, idx, this), true};
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-template <typename InputIt>
-void my_unordered_map<Key, T, Hash, KeyEqual>::insert(InputIt first, InputIt last) 
-{
-    while (first != last) 
-    {
-        insert(*first);
-        ++first;
-    }
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-void my_unordered_map<Key, T, Hash, KeyEqual>::insert(std::initializer_list<value_type> ilist)
-{
-    for (const auto& p : ilist) {
-        insert(p);
-    }
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-T& my_unordered_map<Key, T, Hash, KeyEqual>::operator[](const Key& key)
-{
-    if (load_factor() > max_load_factor()) rehash(table.size() * 2);
-
-    auto it = find(key);
-    if (it != end()) return it->second;
-    return insert({key, T()}).first->second;
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-T& my_unordered_map<Key, T, Hash, KeyEqual>::operator[](Key&& key)
-{
-    if (load_factor() > max_load_factor()) rehash(table.size() * 2);
-
-    auto it = find(std::move(key));
-    if (it != end()) return it->second;
-    return insert({std::move(key), T()}).first->second;
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-template <typename K>
-T& my_unordered_map<Key, T, Hash, KeyEqual>::operator[](K&& key)
-{
-    if (load_factor() > max_load_factor()) rehash(table.size() * 2);
-
-    auto it = find(key);
-    if (it != end()) return it->second;
-    return insert({std::forward(key), T()}).first->second;
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-template <class M>
-std::pair<iterator, bool> my_unordered_map<Key, T, Hash, KeyEqual>::insert_or_assign( const Key& key, M&& obj )
-{
-    auto it = find(key);
-    if (it != end())
-    {
-        it->second = std::forward<M>(obj);
-        return {it, false};
-    }
-    return insert({key, std::forward<M>(obj)});
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-template <class M>
-std::pair<iterator, bool> 
-    my_unordered_map<Key, T, Hash, KeyEqual>::insert_or_assign( Key&& key, M&& obj )
-{
-    auto it = find(std::move(key));
-    if (it != end()) {
-        it->second = std::forward<M>(obj);
-        return {it, false};
-    }
-    return insert({std::move(key), std::forward<M>(obj)});
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator
-    my_unordered_map<Key, T, Hash, KeyEqual>::erase( iterator pos )
-{
-    if (pos == end()) return end();
-
-    size_type idx = pos.idx;
-    auto& bucket = table[idx];
-
-    auto prev = bucket.befor_begin();
-    auto curr = bucket.begin();
-
-    if (curr != bucket.end() && curr.current != pos.current)
-    {
-        prev = curr;
-        ++curr;
+    unordered_map& operator=(const unordered_map& other) {
+        if (this != &other) {
+            clear();
+            hash_ = other.hash_;
+            key_equal_ = other.key_equal_;
+            node_alloc_ = other.node_alloc_;
+            max_load_factor_ = other.max_load_factor_;
+            rehash(other.bucket_count_);
+        
+            for (const auto& item : other) {
+                emplace(item);
+            }
+        }
+        return *this;
     }
 
-    auto next_local = bucket.erase_after(prev);
-    --n;
+    unordered_map(unordered_map&& other) noexcept
+        : bucket_count_(std::exchange(other.bucket_count_, 0)),
+            hash_(std::move(other.hash_)),
+            key_equal_(std::move(other.key_equal_)),
+            node_alloc_(std::move(other.node_alloc_)),
+            size_(std::exchange(other.size_, 0)),
+            max_load_factor_(other.max_load_factor_),
+            bucket_(std::move(other.bucket_)) {}
 
-    while (next_local != bucket.end())
-    {
-        return iterator(next_local.current, idx, this);
-    } else {
-        iterator res(nullptr, idx, this);
-        return ++res;
-    }
-}
-
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator
-    my_unordered_map<Key, T, Hash, KeyEqual>::erase( const_iterator pos )
-{
-    if (pos == end()) return end();
-
-    size_type idx = pos.idx;
-    auto& bucket = table[idx];
-
-    auto prev = bucket.befor_begin();
-    auto curr = bucket.begin();
-
-    while (curr != bucket.end() && curr.current != pos.current)
-    {
-        prev = curr;
-        ++curr;
+    unordered_map& operator=(unordered_map&& other) noexcept {
+        if (this != &other) {
+            clear();
+            bucket_count_ = std::exchange(other.bucket_count_, 0);
+            hash_ = std::move(other.hash_);
+            key_equal_ = std::move(other.key_equal_);
+            node_alloc_ = std::move(other.node_alloc_);
+            size_ = std::exchange(other.size_, 0);
+            max_load_factor_ = other.max_load_factor_;
+            bucket_ = std::move(other.bucket_);
+        }
+        return *this;
     }
 
-    auto next_local = bucket.erase_after(prev);
-    --n;
 
-    if (next_local != bucket.end())
-    {
-        return iterator(next_local.current, idx, this);
-    } else {
-        iterator res(nullptr, idx, this);
-        return ++res;
+
+    ~unordered_map() {
+        clear();
     }
-}
 
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-size_t my_unordered_map<Key, T, Hash, KeyEqual>::erase( const Key& key )
-{
-    size_t idx = get_bucket_index(key);
-    auto& bucket = table[idx];
 
-    auto prev = bucket.befor_begin();
-    auto curr = bucket.begin();
+    
+    iterator find( const Key& key ) {
+        if (bucket_[hash_(key) % bucket_count_]){
+            Node* ptr = bucket_[hash_(key) % bucket_count_];
+            while (ptr && ptr->value.first != key) {
+                ptr = ptr->next;
+            }
+            if (ptr) return iterator(ptr, this, hash_(key) % bucket_count_);
+        }         
+        return end();
+    }
 
-    while (curr != bucket.end()) {
-        if ( eq_fn(curr->first, key) ) 
-        {
-            bucket.erase_after(prev);
-            --n;
-            return 1;
-        } else
-        {
+    const_iterator find( const Key& key ) const {
+        if (bucket_[hash_(key) % bucket_count_]){
+            Node* ptr = bucket_[hash_(key) % bucket_count_];
+            while (ptr && ptr->value.first != key) {
+                ptr = ptr->next;
+            }
+            if (ptr) return const_iterator(ptr, this, hash_(key) % bucket_count_);
+        }         
+        return cend();
+    }
+
+    template <typename... Args>
+    std::pair<iterator, bool> emplace(Args&&... args) {
+        Node* ptr = create_node(0, std::forward<Args>(args)...);
+
+        const Key& key = ptr->value.first;
+        std::size_t hash_code = hash_(key);
+        ptr->hash_code = hash_code;
+
+        if (bucket_count_ > 0) {
+            size_type idx = hash_code % bucket_count_;
+            Node* curr = bucket_[idx];
+            while (curr != nullptr) {
+                if (key_equal_(curr->value.first, key)) {
+                    destroy_node(ptr);
+                    return {iterator(curr, this, idx), false};
+                }
+                curr = curr->next;
+            }
+        }
+
+        if (bucket_count_ == 0 || size_ + 1 > bucket_count_ * max_load_factor_) {
+            rehash(std::max(size_type(8), bucket_count_ * 2));
+        }
+
+        size_type idx = hash_code % bucket_count_;
+
+        ptr->next = bucket_[idx];
+        bucket_[idx] = ptr;
+        ++size_;
+
+        return {iterator(ptr, this, idx), true};
+    }
+
+    std::pair<iterator, bool> insert( const value_type& value ) {
+        return emplace(value);
+    }
+
+    std::pair<iterator, bool> insert( value_type&& value ) {
+        return emplace(std::move(value));
+    }
+
+    T& operator[](const Key& key) {
+        return insert(value_type(key, T())).first->second;
+    }
+
+    T& operator[](Key&& key) {
+        return insert(value_type(std::move(key), T())).first->second;
+    }
+
+    T& at(const Key& key) {
+        iterator it = find(key);
+        if (it == end()) {
+            throw std::out_of_range("mystl::unordered_map::at: key not found");
+        }
+        return it->second;
+    }
+
+    const T& at(const Key& key) const {
+        const_iterator it = find(key);
+        if (it == end()) {
+            throw std::out_of_range("mystl::unordered_map::at: key not found");
+        }
+        return it->second;
+    }
+
+    size_type erase(const key_type& key) {
+        if (bucket_count_ == 0) return 0;
+    
+        std::size_t hash_code = hash_(key);
+        size_type idx = hash_code % bucket_count_;
+
+        Node* curr = bucket_[idx];
+        Node* prev = nullptr;
+
+        while (curr) {
+            if (key_equal_(curr->value.first, key)) {
+                if (prev) {
+                    prev->next = curr->next;
+                } else {
+                    bucket_[idx] = curr->next;
+                }
+                destroy_node(curr);
+                --size_;
+                return 1;
+            }
             prev = curr;
-            ++curr;
+            curr = curr->next;
         }
-    }
         return 0;
-}
+    }
 
-template <typename Key, typename T, typename Hash, typename KeyEqual>
-typename my_unordered_map<Key, T, Hash, KeyEqual>::iterator 
-    erase( const_iterator first, const_iterator last )
-{
-        while (first != last) first = erase(first);
-        return iterator(first.current, first.idx, this); //last
-}
+    iterator erase(const_iterator pos) {
+        if (pos == end()) return end();
+
+        const_iterator next_it = pos;
+        ++next_it;
+
+        Node* node_to_delete = const_cast<Node*>(pos.current_node_);
+        size_type idx = node_to_delete->hash_code % bucket_count_;
+
+        Node* curr = bucket_[idx];
+        Node* prev = nullptr;
+
+        while (curr) {
+            if (curr == node_to_delete) {
+                if (prev) {
+                    prev->next = curr->next;
+                } else {
+                    bucket_[idx] = curr->next;
+                }
+                destroy_node(curr);
+                --size_;
+                break;
+            }
+            prev = curr;
+            curr = curr->next;
+        }
+
+        return iterator(const_cast<Node*>(next_it.current_node_), this, next_it.bucket_index_);
+    }
+
+    iterator erase(const_iterator first, const_iterator last) {
+        while (first != last) {
+            first = erase(first);
+        }
+        return iterator(const_cast<Node*>(last.current_node_), this, last.bucket_index_);
+    }
+
+    float load_factor() const noexcept {
+        if (bucket_count_ == 0) return 0.0f;
+        return static_cast<float>(size_) / static_cast<float>(bucket_count_);
+    }
+
+    void max_load_factor(float mlf) {
+        max_load_factor_ = mlf;
+    }
+
+    void reserve(size_type count) {
+        rehash(static_cast<size_type>(std::ceil(static_cast<float>(count) / max_load_factor_)));
+    }
+
+    [[nodiscard]] bool empty() const noexcept {
+        return size_ == 0;
+    }
+
+    [[nodiscard]] size_type size() const noexcept {
+        return size_;
+    }
+
+    
+    [[nodiscard]] float max_load_factor() const noexcept {
+        return max_load_factor_;
+    }
+
+    size_type bucket_count() const noexcept {
+        return bucket_count_;
+    }
+
+
+    void rehash(size_type count) {
+        size_type target_bucket_count = std::max(count, static_cast<size_type>(std::ceil(static_cast<float>(size_) / max_load_factor_)));
+    
+        if (target_bucket_count <= bucket_count_) {
+            return;
+        }
+
+        vector<Node*> new_buckets(target_bucket_count, nullptr);
+
+        for (size_type i = 0; i < bucket_count_; ++i) {
+            Node* curr = bucket_[i];
+            while (curr != nullptr) {
+                Node* next_node = curr->next;
+
+                size_type new_idx = curr->hash_code % target_bucket_count;
+
+                curr->next = new_buckets[new_idx];
+                new_buckets[new_idx] = curr;
+
+                curr = next_node;
+            }
+        }
+
+        bucket_ = std::move(new_buckets);
+        bucket_count_ = target_bucket_count;
+    }
+
+    void clear() noexcept {
+        for (size_type i = 0; i < bucket_count_; ++i) {
+            Node* curr = bucket_[i];
+            while (curr != nullptr) {
+                Node* next = curr->next;
+                destroy_node(curr);
+                curr = next;
+            }
+            bucket_[i] = nullptr;
+        }
+        size_ = 0;
+    }
+
+
+
+private:
+    hasher hash_;
+    key_equal key_equal_;
+    vector<Node*> bucket_;
+    size_type size_{};
+    size_type bucket_count_{};
+    float max_load_factor_{1.0f};
+    [[no_unique_address]] node_allocator node_alloc_;
+
+
+
+
+
+
+};
+
+} //mystl namespace

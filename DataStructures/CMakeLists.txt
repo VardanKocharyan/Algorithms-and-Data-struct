@@ -14,3 +14,19 @@ target_include_directories(mystl INTERFACE
 
 add_subdirectory(examples)
 add_subdirectory(tests)
+
+enable_testing()
+
+set(ALL_TESTS
+    test_vector
+    test_forward_list
+    test_list
+    test_deque
+    test_stack
+    test_queue
+    test_priority_queue
+)
+
+foreach(test ${ALL_TESTS})
+    add_test(NAME ${test} COMMAND ${test})
+endforeach()

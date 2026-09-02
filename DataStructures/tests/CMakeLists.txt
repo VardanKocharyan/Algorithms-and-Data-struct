@@ -20,3 +20,14 @@ target_include_directories(test_stack PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 add_executable(test_queue adaptors/test_queue.cpp)
 target_include_directories(test_queue PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+# Priority Queue test executable
+add_executable(test_priority_queue adaptors/test_priority_queue.cpp)
+target_include_directories(test_priority_queue PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_priority_queue PRIVATE mystl)
+
+# Unordered Map test executable
+add_executable(test_unordered_map unordered/test_unordered_map.cpp)
+target_link_libraries(test_unordered_map PRIVATE gtest gtest_main mystl)
+
+

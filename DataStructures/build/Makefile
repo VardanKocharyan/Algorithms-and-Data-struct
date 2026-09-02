@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /home/vardan/Algorithms_and_DataStructures/DataStructures/bui
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
@@ -207,6 +217,32 @@ test_queue/fast:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_queue.dir/build.make tests/CMakeFiles/test_queue.dir/build
 .PHONY : test_queue/fast
 
+#=============================================================================
+# Target rules for targets named test_priority_queue
+
+# Build rule for target.
+test_priority_queue: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_priority_queue
+.PHONY : test_priority_queue
+
+# fast build rule for target.
+test_priority_queue/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_priority_queue.dir/build.make tests/CMakeFiles/test_priority_queue.dir/build
+.PHONY : test_priority_queue/fast
+
+#=============================================================================
+# Target rules for targets named test_unordered_map
+
+# Build rule for target.
+test_unordered_map: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_unordered_map
+.PHONY : test_unordered_map
+
+# fast build rule for target.
+test_unordered_map/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/build
+.PHONY : test_unordered_map/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -215,12 +251,15 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test"
 	@echo "... mystl_example"
 	@echo "... test_deque"
 	@echo "... test_forward_list"
 	@echo "... test_list"
+	@echo "... test_priority_queue"
 	@echo "... test_queue"
 	@echo "... test_stack"
+	@echo "... test_unordered_map"
 	@echo "... test_vector"
 .PHONY : help
 

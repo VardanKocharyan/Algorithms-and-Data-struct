@@ -33,6 +33,7 @@ private:
 
     [[no_unique_address]] allocator_type alloc_{};
 
+public:
     void swap(vector& other) noexcept {
         std::swap(data_, other.data_);
         std::swap(size_, other.size_);
@@ -244,7 +245,8 @@ public:
     }
 
     reference front() { return data_[0]; }
-const_reference front() const { return data_[0]; }
+    const_reference front() const { return data_[0]; }
+
 
     reference back() { return data_[size() - 1]; }
     const_reference back() const { return data_[size() - 1]; }
@@ -449,8 +451,6 @@ const_reference front() const { return data_[0]; }
     iterator insert(const_iterator pos, T&& value) {
         return emplace(pos, std::move(value));
     }
-
-
 
 };
 

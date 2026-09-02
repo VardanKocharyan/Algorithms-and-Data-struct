@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /home/vardan/Algorithms_and_DataStructures/DataStructures/bui
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
@@ -199,6 +209,58 @@ test_queue: tests/CMakeFiles/test_queue.dir/rule
 test_queue/fast:
 	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_queue.dir/build.make tests/CMakeFiles/test_queue.dir/build
 .PHONY : test_queue/fast
+
+# Convenience name for target.
+tests/CMakeFiles/test_priority_queue.dir/rule:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_priority_queue.dir/rule
+.PHONY : tests/CMakeFiles/test_priority_queue.dir/rule
+
+# Convenience name for target.
+test_priority_queue: tests/CMakeFiles/test_priority_queue.dir/rule
+.PHONY : test_priority_queue
+
+# fast build rule for target.
+test_priority_queue/fast:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_priority_queue.dir/build.make tests/CMakeFiles/test_priority_queue.dir/build
+.PHONY : test_priority_queue/fast
+
+# Convenience name for target.
+tests/CMakeFiles/test_unordered_map.dir/rule:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_unordered_map.dir/rule
+.PHONY : tests/CMakeFiles/test_unordered_map.dir/rule
+
+# Convenience name for target.
+test_unordered_map: tests/CMakeFiles/test_unordered_map.dir/rule
+.PHONY : test_unordered_map
+
+# fast build rule for target.
+test_unordered_map/fast:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/build
+.PHONY : test_unordered_map/fast
+
+adaptors/test_priority_queue.o: adaptors/test_priority_queue.cpp.o
+.PHONY : adaptors/test_priority_queue.o
+
+# target to build an object file
+adaptors/test_priority_queue.cpp.o:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_priority_queue.dir/build.make tests/CMakeFiles/test_priority_queue.dir/adaptors/test_priority_queue.cpp.o
+.PHONY : adaptors/test_priority_queue.cpp.o
+
+adaptors/test_priority_queue.i: adaptors/test_priority_queue.cpp.i
+.PHONY : adaptors/test_priority_queue.i
+
+# target to preprocess a source file
+adaptors/test_priority_queue.cpp.i:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_priority_queue.dir/build.make tests/CMakeFiles/test_priority_queue.dir/adaptors/test_priority_queue.cpp.i
+.PHONY : adaptors/test_priority_queue.cpp.i
+
+adaptors/test_priority_queue.s: adaptors/test_priority_queue.cpp.s
+.PHONY : adaptors/test_priority_queue.s
+
+# target to generate assembly for a file
+adaptors/test_priority_queue.cpp.s:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_priority_queue.dir/build.make tests/CMakeFiles/test_priority_queue.dir/adaptors/test_priority_queue.cpp.s
+.PHONY : adaptors/test_priority_queue.cpp.s
 
 adaptors/test_queue.o: adaptors/test_queue.cpp.o
 .PHONY : adaptors/test_queue.o
@@ -344,6 +406,30 @@ sequence/test_vector.cpp.s:
 	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_vector.dir/build.make tests/CMakeFiles/test_vector.dir/sequence/test_vector.cpp.s
 .PHONY : sequence/test_vector.cpp.s
 
+unordered/test_unordered_map.o: unordered/test_unordered_map.cpp.o
+.PHONY : unordered/test_unordered_map.o
+
+# target to build an object file
+unordered/test_unordered_map.cpp.o:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/unordered/test_unordered_map.cpp.o
+.PHONY : unordered/test_unordered_map.cpp.o
+
+unordered/test_unordered_map.i: unordered/test_unordered_map.cpp.i
+.PHONY : unordered/test_unordered_map.i
+
+# target to preprocess a source file
+unordered/test_unordered_map.cpp.i:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/unordered/test_unordered_map.cpp.i
+.PHONY : unordered/test_unordered_map.cpp.i
+
+unordered/test_unordered_map.s: unordered/test_unordered_map.cpp.s
+.PHONY : unordered/test_unordered_map.s
+
+# target to generate assembly for a file
+unordered/test_unordered_map.cpp.s:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/unordered/test_unordered_map.cpp.s
+.PHONY : unordered/test_unordered_map.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -352,12 +438,18 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test"
 	@echo "... test_deque"
 	@echo "... test_forward_list"
 	@echo "... test_list"
+	@echo "... test_priority_queue"
 	@echo "... test_queue"
 	@echo "... test_stack"
+	@echo "... test_unordered_map"
 	@echo "... test_vector"
+	@echo "... adaptors/test_priority_queue.o"
+	@echo "... adaptors/test_priority_queue.i"
+	@echo "... adaptors/test_priority_queue.s"
 	@echo "... adaptors/test_queue.o"
 	@echo "... adaptors/test_queue.i"
 	@echo "... adaptors/test_queue.s"
@@ -376,6 +468,9 @@ help:
 	@echo "... sequence/test_vector.o"
 	@echo "... sequence/test_vector.i"
 	@echo "... sequence/test_vector.s"
+	@echo "... unordered/test_unordered_map.o"
+	@echo "... unordered/test_unordered_map.i"
+	@echo "... unordered/test_unordered_map.s"
 .PHONY : help
 
 
