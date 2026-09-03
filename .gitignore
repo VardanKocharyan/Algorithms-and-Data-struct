@@ -1,80 +1,59 @@
-# ============================================================
-# CMake / Build directories
-# ============================================================
-
+# Build directories
 build/
 cmake-build-*/
+out/
 
-# CMake generated files
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Compiled artifacts
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.so.*
+*.dylib
+*.a
+*.out
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# CMake generated
 CMakeCache.txt
 CMakeFiles/
 CTestTestfile.cmake
-cmake_install.cmake
-
-# Generated build-system files
 Makefile
+cmake_install.cmake
 compile_commands.json
 
-# ============================================================
-# C / C++ compiler artifacts
-# ============================================================
+# Test artifacts
+Testing/
+*.test
+*.log
 
-*.o
-*.obj
-*.a
-*.so
-*.so.*
-*.dll
-*.dylib
-
-# Executables
-*.out
-*.exe
-
-# ============================================================
 # Coverage / profiling
-# ============================================================
-
+coverage/
 *.gcda
 *.gcno
 *.gcov
-coverage/
 .profraw
 .profdata
 
-# ============================================================
-# IDE / editor files
-# ============================================================
-
-.idea/
-.vscode/
-
-# Qt Creator
-*.pro.user
-*.pro.user.*
-*.qtc_clangd
-
-# ============================================================
 # OS-generated files
-# ============================================================
-
 .DS_Store
 Thumbs.db
 
-# ============================================================
 # Temporary / backup files
-# ============================================================
-
-*.swp
-*.swo
 *~
 *.tmp
 *.bak
 
-# ============================================================
-# Environment / local configuration
-# ============================================================
-
-.env
-.env.*
-!.env.example
+# Package manager
+vcpkg_installed/
