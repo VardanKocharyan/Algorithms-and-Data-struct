@@ -243,6 +243,19 @@ test_unordered_map/fast:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/build
 .PHONY : test_unordered_map/fast
 
+#=============================================================================
+# Target rules for targets named test_unordered_set
+
+# Build rule for target.
+test_unordered_set: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_unordered_set
+.PHONY : test_unordered_set
+
+# fast build rule for target.
+test_unordered_set/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_set.dir/build.make tests/CMakeFiles/test_unordered_set.dir/build
+.PHONY : test_unordered_set/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -260,6 +273,7 @@ help:
 	@echo "... test_queue"
 	@echo "... test_stack"
 	@echo "... test_unordered_map"
+	@echo "... test_unordered_set"
 	@echo "... test_vector"
 .PHONY : help
 

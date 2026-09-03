@@ -54,4 +54,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "tests/CMakeFiles/test_queue.dir/DependInfo.cmake"
   "tests/CMakeFiles/test_priority_queue.dir/DependInfo.cmake"
   "tests/CMakeFiles/test_unordered_map.dir/DependInfo.cmake"
+  "tests/CMakeFiles/test_unordered_set.dir/DependInfo.cmake"
   )

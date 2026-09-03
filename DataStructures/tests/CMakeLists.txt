@@ -30,4 +30,8 @@ target_link_libraries(test_priority_queue PRIVATE mystl)
 add_executable(test_unordered_map unordered/test_unordered_map.cpp)
 target_link_libraries(test_unordered_map PRIVATE gtest gtest_main mystl)
 
+# Unordered Set test executable
+add_executable(test_unordered_set unordered/test_unordered_set.cpp)
+target_link_libraries(test_unordered_set PRIVATE gtest gtest_main mystl)
+
 

@@ -238,6 +238,20 @@ test_unordered_map/fast:
 	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/build
 .PHONY : test_unordered_map/fast
 
+# Convenience name for target.
+tests/CMakeFiles/test_unordered_set.dir/rule:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_unordered_set.dir/rule
+.PHONY : tests/CMakeFiles/test_unordered_set.dir/rule
+
+# Convenience name for target.
+test_unordered_set: tests/CMakeFiles/test_unordered_set.dir/rule
+.PHONY : test_unordered_set
+
+# fast build rule for target.
+test_unordered_set/fast:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_set.dir/build.make tests/CMakeFiles/test_unordered_set.dir/build
+.PHONY : test_unordered_set/fast
+
 adaptors/test_priority_queue.o: adaptors/test_priority_queue.cpp.o
 .PHONY : adaptors/test_priority_queue.o
 
@@ -430,6 +444,30 @@ unordered/test_unordered_map.cpp.s:
 	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/unordered/test_unordered_map.cpp.s
 .PHONY : unordered/test_unordered_map.cpp.s
 
+unordered/test_unordered_set.o: unordered/test_unordered_set.cpp.o
+.PHONY : unordered/test_unordered_set.o
+
+# target to build an object file
+unordered/test_unordered_set.cpp.o:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_set.dir/build.make tests/CMakeFiles/test_unordered_set.dir/unordered/test_unordered_set.cpp.o
+.PHONY : unordered/test_unordered_set.cpp.o
+
+unordered/test_unordered_set.i: unordered/test_unordered_set.cpp.i
+.PHONY : unordered/test_unordered_set.i
+
+# target to preprocess a source file
+unordered/test_unordered_set.cpp.i:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_set.dir/build.make tests/CMakeFiles/test_unordered_set.dir/unordered/test_unordered_set.cpp.i
+.PHONY : unordered/test_unordered_set.cpp.i
+
+unordered/test_unordered_set.s: unordered/test_unordered_set.cpp.s
+.PHONY : unordered/test_unordered_set.s
+
+# target to generate assembly for a file
+unordered/test_unordered_set.cpp.s:
+	cd /home/vardan/Algorithms_and_DataStructures/DataStructures/build && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_set.dir/build.make tests/CMakeFiles/test_unordered_set.dir/unordered/test_unordered_set.cpp.s
+.PHONY : unordered/test_unordered_set.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -446,6 +484,7 @@ help:
 	@echo "... test_queue"
 	@echo "... test_stack"
 	@echo "... test_unordered_map"
+	@echo "... test_unordered_set"
 	@echo "... test_vector"
 	@echo "... adaptors/test_priority_queue.o"
 	@echo "... adaptors/test_priority_queue.i"
@@ -471,6 +510,9 @@ help:
 	@echo "... unordered/test_unordered_map.o"
 	@echo "... unordered/test_unordered_map.i"
 	@echo "... unordered/test_unordered_map.s"
+	@echo "... unordered/test_unordered_set.o"
+	@echo "... unordered/test_unordered_set.i"
+	@echo "... unordered/test_unordered_set.s"
 .PHONY : help
 
 

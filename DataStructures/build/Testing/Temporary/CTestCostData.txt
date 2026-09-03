@@ -1,8 +1,0 @@
-test_vector 1 0.00369782
-test_forward_list 1 0.00360823
-test_list 1 0.00486492
-test_deque 1 0.00413798
-test_stack 1 0.0022311
-test_queue 1 0.0030657
-test_priority_queue 1 0.00351172
----

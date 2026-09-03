@@ -104,6 +104,7 @@ tests/all: tests/CMakeFiles/test_stack.dir/all
 tests/all: tests/CMakeFiles/test_queue.dir/all
 tests/all: tests/CMakeFiles/test_priority_queue.dir/all
 tests/all: tests/CMakeFiles/test_unordered_map.dir/all
+tests/all: tests/CMakeFiles/test_unordered_set.dir/all
 .PHONY : tests/all
 
 # Recursive "preinstall" directory target.
@@ -119,6 +120,7 @@ tests/clean: tests/CMakeFiles/test_stack.dir/clean
 tests/clean: tests/CMakeFiles/test_queue.dir/clean
 tests/clean: tests/CMakeFiles/test_priority_queue.dir/clean
 tests/clean: tests/CMakeFiles/test_unordered_map.dir/clean
+tests/clean: tests/CMakeFiles/test_unordered_set.dir/clean
 .PHONY : tests/clean
 
 #=============================================================================
@@ -154,7 +156,7 @@ examples/CMakeFiles/mystl_example.dir/clean:
 tests/CMakeFiles/test_vector.dir/all:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_vector.dir/build.make tests/CMakeFiles/test_vector.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_vector.dir/build.make tests/CMakeFiles/test_vector.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vardan/Algorithms_and_DataStructures/DataStructures/build/CMakeFiles --progress-num=17,18 "Built target test_vector"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vardan/Algorithms_and_DataStructures/DataStructures/build/CMakeFiles --progress-num=19,20 "Built target test_vector"
 .PHONY : tests/CMakeFiles/test_vector.dir/all
 
 # Build rule for subdir invocation for target.
@@ -354,6 +356,32 @@ test_unordered_map: tests/CMakeFiles/test_unordered_map.dir/rule
 tests/CMakeFiles/test_unordered_map.dir/clean:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_map.dir/build.make tests/CMakeFiles/test_unordered_map.dir/clean
 .PHONY : tests/CMakeFiles/test_unordered_map.dir/clean
+
+#=============================================================================
+# Target rules for target tests/CMakeFiles/test_unordered_set.dir
+
+# All Build rule for target.
+tests/CMakeFiles/test_unordered_set.dir/all:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_set.dir/build.make tests/CMakeFiles/test_unordered_set.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_set.dir/build.make tests/CMakeFiles/test_unordered_set.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/vardan/Algorithms_and_DataStructures/DataStructures/build/CMakeFiles --progress-num=17,18 "Built target test_unordered_set"
+.PHONY : tests/CMakeFiles/test_unordered_set.dir/all
+
+# Build rule for subdir invocation for target.
+tests/CMakeFiles/test_unordered_set.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/vardan/Algorithms_and_DataStructures/DataStructures/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_unordered_set.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/vardan/Algorithms_and_DataStructures/DataStructures/build/CMakeFiles 0
+.PHONY : tests/CMakeFiles/test_unordered_set.dir/rule
+
+# Convenience name for target.
+test_unordered_set: tests/CMakeFiles/test_unordered_set.dir/rule
+.PHONY : test_unordered_set
+
+# clean rule for target.
+tests/CMakeFiles/test_unordered_set.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_unordered_set.dir/build.make tests/CMakeFiles/test_unordered_set.dir/clean
+.PHONY : tests/CMakeFiles/test_unordered_set.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

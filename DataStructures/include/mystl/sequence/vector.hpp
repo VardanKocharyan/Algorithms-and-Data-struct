@@ -263,14 +263,14 @@ public:
     }
 
     reference at( size_type pos ) {
-        if (pos <= size()) {
+        if (pos >= size()) {
             throw std::out_of_range("mystl::vector::at");
         }
         return data_[pos];
     }
 
     const_reference at( size_type pos ) const {
-        if (pos <= size()) {
+        if (pos >= size()) {
             throw std::out_of_range("mystl::vector::at");
         }
         return data_[pos];        
