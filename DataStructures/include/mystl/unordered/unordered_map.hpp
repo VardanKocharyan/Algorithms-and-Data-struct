@@ -146,16 +146,17 @@ public:
         return iterator(nullptr, this, bucket_count_);
     }
 
-    const_iterator cbegin() {
+    const_iterator cbegin() const noexcept {
         for (size_type i = 0; i < bucket_count_; ++i) {
             if (bucket_[i]) return const_iterator(bucket_[i], this, i);
         }
         return cend();
     }
 
-    const_iterator cend() {
+    const_iterator cend() const noexcept {
         return const_iterator(nullptr, this, bucket_count_);
     }
+
 
     explicit unordered_map(size_type bucket_count = 16,
                        const Hash& hash = Hash(),

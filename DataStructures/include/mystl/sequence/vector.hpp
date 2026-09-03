@@ -43,7 +43,7 @@ public:
 
 public:
     vector() noexcept : data_{nullptr}, size_{0}, capacity_{0} {}
-    
+    /*
     explicit vector(size_type count, const Allocator& alloc = Allocator())
         : size_{count}, capacity_{count}, alloc_{alloc}
     {
@@ -72,6 +72,36 @@ public:
             
             throw; // Rethrow exception
         }
+    }
+*/
+    explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator()) 
+        : size_(count), capacity_(count), alloc_(alloc) 
+    {
+        if (count == 0) {
+            data_ = nullptr;
+            return;
+        }
+
+        // 1. Allocate raw memory
+        data_ = std::allocator_traits<allocator_type>::allocate(alloc_, capacity_);
+    
+        // 2. Exception-safe construct loop
+        size_type i = 0;
+        try {
+            for (; i < count; ++i) {
+                // Value-initialize each element: T()
+                std::allocator_traits<allocator_type>::construct(alloc_, data_ + i, value);
+            }
+        } catch (...) {
+            // Rollback: Destroy constructed elements in reverse order
+            for (size_type j = 0; j < i; ++j) {
+                std::allocator_traits<allocator_type>::destroy(alloc_, data_ + j);
+            }
+            // Deallocate memory buffer
+            std::allocator_traits<allocator_type>::deallocate(alloc_, data_, capacity_);
+            
+            throw; // Rethrow exception
+        }     
     }
 
     vector(const vector& other)
@@ -118,8 +148,10 @@ public:
         }
     }
 
-    vector& operator=(vector other) noexcept { // Pass by value (Copy construction)
-        swap(other); // Swap our state with the temporary copy
+    vector& operator=(const vector& other) noexcept { // Pass by value (Copy construction)
+        if (this == &other) return *this;
+        vector tmp(other);
+        swap(tmp); // Swap our state with the temporary copy
         return *this;
     } // ~vector() automatically cleans up the OLD state in 'other'
 
@@ -332,7 +364,7 @@ public:
             size_ = count;
         } else if (size_ < count) {
             if (count > capacity_) {
-                resize(count);
+                reserve(count);
             }
             
             size_type i{size_};
